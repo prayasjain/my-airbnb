@@ -52,7 +52,7 @@ export class PlaceDetailPage implements OnInit {
         },
         {
           text: 'Cancel',
-          role: 'destructive' // color the button red with 'destructive' can be 'cancel', which wont color red
+          role: 'cancel' // color the button red with 'destructive' can be 'cancel', which wont color red
         }
       ]
     })
