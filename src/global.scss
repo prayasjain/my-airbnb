@@ -26,8 +26,8 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 ion-toolbar {
-    --background: var(--ion-color-primary);
-    --color: var(--ion-color-primary-contrast);
+    --background: var(--ion-color-warning);
+    --color: var(--ion-color-warning-contrast);
 }
 
 .ion-invalid.ion-touched ion-label {

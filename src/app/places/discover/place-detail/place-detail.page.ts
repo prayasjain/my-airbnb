@@ -65,7 +65,7 @@ export class PlaceDetailPage implements OnInit {
     console.log(mode);
     this.modalCtrl.create({
       component: CreateBookingComponent, 
-      componentProps: {selectedPlace: this.place}
+      componentProps: {selectedPlace: this.place, selectedMode: mode}
     })
     .then(modalEl => {
       modalEl.present();
@@ -75,6 +75,7 @@ export class PlaceDetailPage implements OnInit {
       console.log(resultData.data, resultData.role);
       if (resultData.role === 'confirm') {
         console.log('Booked!');
+        console.log(resultData.data);
       }
     });
   }
