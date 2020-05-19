@@ -15,7 +15,16 @@
         size-md="6"
         offset-md="3"
         class="ion-text-center"
-        *ngIf="!loadedBookings || loadedBookings.length === 0"
+        *ngIf="isLoading"
+      >
+      <ion-spinner color="primary"></ion-spinner>
+      </ion-col>
+      <ion-col
+        size="12"
+        size-md="6"
+        offset-md="3"
+        class="ion-text-center"
+        *ngIf="!isLoading && (!loadedBookings || loadedBookings.length === 0)"
       >
       <p>No Bookings Found</p>
       </ion-col>
@@ -24,7 +33,7 @@
         size-md="6"
         offset-md="3"
         class="ion-text-center"
-        *ngIf="loadedBookings && loadedBookings.length > 0"
+        *ngIf="!isLoading && loadedBookings && loadedBookings.length > 0"
       >
         <ion-list>
           <ion-item-sliding
@@ -32,6 +41,9 @@
             #slidingBooking
           >
             <ion-item>
+              <ion-avatar slot="start">
+                <ion-img [src]="booking.placeImage"></ion-img>
+              </ion-avatar>
               <ion-label>
                 <h5>{{booking.placeTitle}}</h5>
                 <p>Guests: {{booking.guestNumber}}</p>

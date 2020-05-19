@@ -5,6 +5,7 @@ import {
   ModalController,
   ActionSheetController,
   LoadingController,
+  AlertController,
 } from "@ionic/angular";
 import { PlacesService } from "../../places.service";
 import { Place } from "../../place.model";
@@ -22,6 +23,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
   place: Place;
   isBookable: boolean = false;
   placeSub: Subscription;
+  isLoading = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -32,7 +34,8 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
     private actionSheetCtrl: ActionSheetController,
     private bookingService: BookingService,
     private loadingCtrl: LoadingController,
-    private authService: AuthService
+    private authService: AuthService,
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -41,11 +44,22 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack("/places/tabs/offers");
         return;
       }
+      this.isLoading = true;
       this.placeSub = this.placesService
         .getPlace(paramMap.get("placeId"))
         .subscribe((place) => {
           this.place = place;
           this.isBookable = place.userId !== this.authService.userId;
+          this.isLoading = false;
+        }, error => {
+          this.alertCtrl.create({
+            header: "An error Occcured",
+            message: "Invalid Discover Place",
+            buttons: [{text: 'Okay', handler: () => {
+              this.router.navigate(['/places/tabs/discover']);
+            }}],
+          })
+          .then(alertEl=> alertEl.present());
         });
     });
   }
