@@ -4,7 +4,7 @@ import { AuthService } from "../auth/auth.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { take, map, tap, delay, switchMap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
-import { PlaceLocation } from './location.model';
+import { PlaceLocation } from "./location.model";
 
 // new Place(
 //   "p1",
@@ -115,20 +115,30 @@ export class PlacesService {
       );
   }
 
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append("image", image);
+    return this.http.post<{ imageUrl: string; imagePath: string }>(
+      "https://us-central1-ionic-pairbnb-56d99.cloudfunctions.net/storeImage",
+      uploadData
+    );
+  }
+
   addPlace(
     title: string,
     desc: string,
     price: number,
     dateFrom: Date,
     dateTo: Date,
-    location: PlaceLocation
+    location: PlaceLocation,
+    imageUrl: string
   ) {
     let generatedId: string;
     const newPlace = new Place(
       Math.random().toString(),
       title,
       desc,
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Windsor_Castle_at_Sunset_-_Nov_2006.jpg/220px-Windsor_Castle_at_Sunset_-_Nov_2006.jpg",
+      imageUrl,
       price,
       dateFrom,
       dateTo,
