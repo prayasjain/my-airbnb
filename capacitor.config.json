@@ -1,0 +1,14 @@
+{
+  "appId": "com.prayasjain.pairbnb",
+  "appName": "pairbnb",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {},
+  "linuxAndroidStudioPath": "/home/lenovo/android-studio/bin/studio.sh"
+}
