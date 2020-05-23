@@ -12,8 +12,9 @@ import { Place } from "../../place.model";
 import { CreateBookingComponent } from "../../../bookings/create-booking/create-booking.component";
 import { Subscription } from "rxjs";
 import { BookingService } from "src/app/bookings/booking.service";
-import { AuthService } from 'src/app/auth/auth.service';
-import { MapModalComponent } from 'src/app/shared/map-modal/map-modal.component';
+import { AuthService } from "src/app/auth/auth.service";
+import { MapModalComponent } from "src/app/shared/map-modal/map-modal.component";
+import { take, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-place-detail",
@@ -46,22 +47,41 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         return;
       }
       this.isLoading = true;
-      this.placeSub = this.placesService
-        .getPlace(paramMap.get("placeId"))
-        .subscribe((place) => {
-          this.place = place;
-          this.isBookable = place.userId !== this.authService.userId;
-          this.isLoading = false;
-        }, error => {
-          this.alertCtrl.create({
-            header: "An error Occcured",
-            message: "Invalid Discover Place",
-            buttons: [{text: 'Okay', handler: () => {
-              this.router.navigate(['/places/tabs/discover']);
-            }}],
+      let fetchedUserId : string;
+      this.placeSub = this.authService.userId
+        .pipe(
+          take(1),
+          switchMap((userId) => {
+            if (!userId) {
+              throw new Error("No User ID");
+            }
+            fetchedUserId = userId;
+            return this.placesService.getPlace(paramMap.get("placeId"));
           })
-          .then(alertEl=> alertEl.present());
-        });
+        )
+        .subscribe(
+          (place) => {
+            this.place = place;
+            this.isBookable = place.userId !== fetchedUserId;
+            this.isLoading = false;
+          },
+          (error) => {
+            this.alertCtrl
+              .create({
+                header: "An error Occcured",
+                message: "Invalid Discover Place",
+                buttons: [
+                  {
+                    text: "Okay",
+                    handler: () => {
+                      this.router.navigate(["/places/tabs/discover"]);
+                    },
+                  },
+                ],
+              })
+              .then((alertEl) => alertEl.present());
+          }
+        );
     });
   }
 
@@ -109,38 +129,49 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       })
       .then((resultData) => {
         if (resultData.role === "confirm") {
-          this.loadingCtrl.create({
-            message: "Booking your place"
-          }).then(loadingEl => {
-            loadingEl.present();
-            const data = resultData.data.bookingData;
-          this.bookingService.addBooking(
-            this.place.id,
-            this.place.title,
-            this.place.imageUrl,
-            data.firstName,
-            data.lastName,
-            data.guestNumber,
-            data.startDate,
-            data.endDate
-          ).subscribe(()=> {
-            loadingEl.dismiss()
-          });
-          });
+          this.loadingCtrl
+            .create({
+              message: "Booking your place",
+            })
+            .then((loadingEl) => {
+              loadingEl.present();
+              const data = resultData.data.bookingData;
+              this.bookingService
+                .addBooking(
+                  this.place.id,
+                  this.place.title,
+                  this.place.imageUrl,
+                  data.firstName,
+                  data.lastName,
+                  data.guestNumber,
+                  data.startDate,
+                  data.endDate
+                )
+                .subscribe(() => {
+                  loadingEl.dismiss();
+                });
+            });
         }
       });
   }
 
   onShowFullMap() {
-    this.modalCtrl.create({component: MapModalComponent, componentProps: {
-      center: {lat: this.place.location.lat, lng: this.place.location.lng},
-      selectable: false,
-      closeButtonText: 'Close',
-      title: this.place.location.address
-    }})
-    .then(modalEl => {
-      modalEl.present();
-    })
+    this.modalCtrl
+      .create({
+        component: MapModalComponent,
+        componentProps: {
+          center: {
+            lat: this.place.location.lat,
+            lng: this.place.location.lng,
+          },
+          selectable: false,
+          closeButtonText: "Close",
+          title: this.place.location.address,
+        },
+      })
+      .then((modalEl) => {
+        modalEl.present();
+      });
   }
 
   ngOnDestroy() {

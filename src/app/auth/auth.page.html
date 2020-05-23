@@ -36,7 +36,7 @@
                 ngModel
                 name="password"
                 required
-                minlength="3"
+                minlength="6"
                 #passCtrl="ngModel"
               ></ion-input>
             </ion-item>
@@ -62,10 +62,9 @@
             type="submit"
             color="primary"
             expand="block"
-            (click)="onLogin()"
             [disabled]="f.invalid"
           >
-            Login
+            {{this.isLoginMode? 'Login' : 'Signup'}}
           </ion-button>
         </ion-col>
       </ion-row>
